@@ -1,33 +1,32 @@
-import yaml
+import typing
+
+from graph_reader_yaml import GraphReader
 
 OBJECT_WEIGHT = 10
 
-class GraphReaderYAML:
-    # TODO: Robot class that has current node/target node instaed of the reader?
-    graph = {}
-    current_node = "H"
 
+class Robot:
+    def __init__(self, graph_reader: GraphReader, graph, start_node: str, target_node: str):
+        self.graph_reader = graph_reader
+        self.current_node = start_node
+        self.target_node = target_node
+        self.graph = graph
 
-    def read_base_graph(self):
-        """
-        Robot knows this from the start.
-        """
-        with open('graph_configs/base_graph.yml', 'r') as file:
-            self.graph = yaml.safe_load(file)
+    def move_to_next_node(self, next_node):
+        pass
 
-    def read_graph_with_obstacles(self):
-        """
-        Simulates the robot looking at the graph in reallife
-        """
-        with open('graph_configs/obstacles.yml', 'r') as file:
-            obstacles = yaml.safe_load(file)
-        return obstacles
+    # Could be in a PathCaluclator class
+    def calculate_shortest_path(self):
+        """returns next node to go to"""
+        pass
 
-    # TODO: also into a Robot class with drive, moveobj, ...
+    def move_object(self, next_node):
+        print(f"Object between {self.current_node} and {next_node} is being moved.")
+
     # We need to make sure that our base graph has lettering that makes sense
     # e.g. from left to right for robot to turn & check in a way that makes sense
     def check_next_nodes(self):
-        obstacles = self.read_graph_with_obstacles()
+        obstacles = self.graph_reader.read_obstacles()
         neighbors = obstacles[self.current_node]
 
         for neighbor in neighbors:

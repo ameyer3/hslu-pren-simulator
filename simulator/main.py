@@ -1,7 +1,8 @@
-from read_graph_yaml import GraphReaderYAML
+from graph_reader_yaml import GraphReaderYAML
+from robot import Robot
 
 
 if __name__ == '__main__':
     graph_reader = GraphReaderYAML()
-    graph_reader.read_base_graph()
-    graph_reader.check_next_nodes()
+    robot = Robot(graph_reader, graph_reader.read_base_graph(), start_node="E", target_node="B")
+    robot.check_next_nodes()
