@@ -1,0 +1,6 @@
+cone:
+  - F
+barrier:
+  - [E, G] # programm duplicates: E,G / G,E
+missing_line:
+  - [E, D]
