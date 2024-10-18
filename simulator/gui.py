@@ -27,39 +27,33 @@ class Gui:
             'C': (473, 400)
         }
 
-    def main_loop(self):
-        running = True
-        while running:
-            self.WINDOW.fill("white")
+    def update_graph(self, graph: dict):
+        self.graph = graph
 
-            # Draw nodes
-            for node, edges in self.graph.items():
-                coordinates = self.nodes_coordinates[node]
-                pygame.draw.circle(self.WINDOW, "black",
-                                   coordinates, 25)
+    def draw(self):
+        self.WINDOW.fill("white")
 
-                for edge in edges:
-                    end_pos = self.nodes_coordinates[edge[0]]
-                    pygame.draw.line(self.WINDOW, "black",
-                                     coordinates, end_pos, 10)
+        # Draw nodes
+        for node, edges in self.graph.items():
+            coordinates = self.nodes_coordinates[node]
+            pygame.draw.circle(self.WINDOW, "black",
+                               coordinates, 25)
 
-            # Render text on nodes
-            for node in self.graph:
-                coordinates = self.nodes_coordinates[node]
-                text_surface = self.font.render(node, True, "white")
-                self.WINDOW.blit(
-                    text_surface, (coordinates[0]-7.5, coordinates[1]-10))
+            for edge in edges:
+                end_pos = self.nodes_coordinates[edge[0]]
+                pygame.draw.line(self.WINDOW, "black",
+                                 coordinates, end_pos, 10)
 
-            pygame.display.flip()
+        # Render text on nodes
+        for node in self.graph:
+            coordinates = self.nodes_coordinates[node]
+            text_surface = self.font.render(node, True, "white")
+            self.WINDOW.blit(
+                text_surface, (coordinates[0]-7.5, coordinates[1]-10))
 
-            # Event handling
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_a:
-                        print("Key A has been pressed")
+        pygame.display.flip()
 
+    def quit():
         # Clean up
         pygame.quit()
         sys.exit()
@@ -80,4 +74,20 @@ if __name__ == "__main__":
     }
 
     game = Gui(graph)
-    game.main_loop()
+    game.draw()  # Update window
+
+    # Remove node A and update it in gui object
+    new_graph = {
+        'B': [('C', 10), ('H', 10)],
+        'C': [('B', 10), ('D', 10), ('H', 10)],
+        'D': [('C', 10), ('E', 10), ('G', 12), ('H', 10)],
+        'E': [('D', 10), ('F', 10), ('G', 6)],
+        'F': [('E', 10), ('G', 6)],
+        'G': [('D', 12), ('E', 6), ('F', 6), ('H', 6)],
+        'H': [('B', 10), ('C', 10), ('D', 10), ('G', 6)],
+    }
+    game.update_graph(new_graph)
+
+    input()  # Wait for human input
+    game.draw()
+    input()  # Wait for human input
