@@ -10,8 +10,11 @@ class PathCalculator:
         if graph == self.latest_graph:
             self.amount_of_no_change_in_graph += 1
         else:
+            print("Graph has changed, we need to calculate a new path.")
+            self.latest_graph = graph
             self.amount_of_no_change_in_graph = 0
             distance, self.path = self._dijkstra(graph, start, target)
+        print(f"Planned path is {self.path}")
         return self.path[self.amount_of_no_change_in_graph + 1]
             
             
