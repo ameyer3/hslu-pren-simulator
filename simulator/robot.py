@@ -1,24 +1,31 @@
-import typing
-
 from graph_reader_yaml import GraphReader
+from path_calculator import PathCalculator
 
 OBJECT_WEIGHT = 10
 
 
 class Robot:
-    def __init__(self, graph_reader: GraphReader, graph, start_node: str, target_node: str):
+    reweighted_edges = []
+
+    def __init__(self, graph_reader: GraphReader, graph, start_node: str, target_node: str, path_calculator: PathCalculator):
         self.graph_reader = graph_reader
         self.current_node = start_node
         self.target_node = target_node
+        self.path_calculator = path_calculator
         self.graph = graph
 
-    def move_to_next_node(self, next_node):
-        pass
+    def has_reached_target(self):
+        return self.current_node == self.target_node
 
-    # Could be in a PathCaluclator class
-    def calculate_shortest_path(self):
-        """returns next node to go to"""
-        pass
+    def move_to_next_node(self):
+        next_node = self.get_next_node()
+        print(f"Moving from {self.current_node} to {next_node}")
+        self.current_node = next_node
+
+    def get_next_node(self):
+        next_node = self.path_calculator.get_next_node(graph=self.graph, start=self.current_node, target=self.target_node)
+        print(f"The next node considering the shortest path is node {next_node}")
+        return next_node
 
     def move_object(self, next_node):
         print(f"Object between {self.current_node} and {next_node} is being moved.")
@@ -43,9 +50,14 @@ class Robot:
                 self.remove_node(neighbor)
 
     def increase_weight_for_edge_with_obstacle(self, node):
-        self.graph[self.current_node] = [{k: v + OBJECT_WEIGHT if k == node else v for k, v in neighbor.items()} for neighbor in self.graph[self.current_node]]
-        self.graph[node] = [{k: v + OBJECT_WEIGHT if k == self.current_node else v for k, v in neighbor.items()} for neighbor in self.graph[node]]
-        print(f"Weight between {self.current_node} and {node} has been raised by {OBJECT_WEIGHT}.")
+        if [node, self.current_node] not in self.reweighted_edges:
+            self.graph[self.current_node] = [{k: v + OBJECT_WEIGHT if k == node else v for k, v in neighbor.items()} for neighbor in self.graph[self.current_node]]
+            self.graph[node] = [{k: v + OBJECT_WEIGHT if k == self.current_node else v for k, v in neighbor.items()} for neighbor in self.graph[node]]
+            print(f"Weight between {self.current_node} and {node} has been raised by {OBJECT_WEIGHT}.")
+            self.reweighted_edges += [self.current_node, node],[node,self.current_node]
+            print(self.reweighted_edges)
+        else:
+            print("Barrier has already been detected and taken into account.")
     
     def remove_node(self, node_to_remove):
         del self.graph[node_to_remove]
