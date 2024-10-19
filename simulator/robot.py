@@ -1,24 +1,29 @@
-import typing
-
 from graph_reader_yaml import GraphReader
+from path_calculator import PathCalculator
 
 OBJECT_WEIGHT = 10
 
 
 class Robot:
-    def __init__(self, graph_reader: GraphReader, graph, start_node: str, target_node: str):
+    def __init__(self, graph_reader: GraphReader, graph, start_node: str, target_node: str, path_calculator: PathCalculator):
         self.graph_reader = graph_reader
         self.current_node = start_node
         self.target_node = target_node
+        self.path_calculator = path_calculator
         self.graph = graph
 
-    def move_to_next_node(self, next_node):
-        pass
+    def has_reached_target(self):
+        return self.current_node == self.target_node
 
-    # Could be in a PathCaluclator class
-    def calculate_shortest_path(self):
-        """returns next node to go to"""
-        pass
+    def move_to_next_node(self):
+        next_node = self.get_next_node()
+        print(f"Moving from {self.current_node} to {next_node}")
+        self.current_node = next_node
+
+    def get_next_node(self):
+        next_node = self.path_calculator.get_next_node(graph=self.graph, start=self.current_node, target=self.target_node)
+        print(f"The next node considering the shortest path is node {next_node}")
+        return next_node
 
     def move_object(self, next_node):
         print(f"Object between {self.current_node} and {next_node} is being moved.")
