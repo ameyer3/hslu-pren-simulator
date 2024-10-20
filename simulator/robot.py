@@ -6,6 +6,7 @@ OBJECT_WEIGHT = 10
 
 class Robot:
     reweighted_edges = []
+    previous_path = []
 
     def __init__(self, graph_reader: GraphReader, graph, start_node: str, target_node: str, path_calculator: PathCalculator):
         self.graph_reader = graph_reader
@@ -18,6 +19,7 @@ class Robot:
         return self.current_node == self.target_node
 
     def move_to_next_node(self):
+        self.previous_path.append(self.current_node)
         next_node = self.get_next_node()
         print(f"Moving from {self.current_node} to {next_node}")
         self.current_node = next_node
