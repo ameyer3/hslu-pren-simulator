@@ -1,6 +1,4 @@
-import typing
-
-from graph_reader_yaml import GraphReader
+from simulator.graph_reader_yaml import GraphReader
 
 OBJECT_WEIGHT = 10
 
