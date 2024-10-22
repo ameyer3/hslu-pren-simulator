@@ -34,12 +34,13 @@ class Robot:
 
     # We need to make sure that our base graph has lettering that makes sense
     # e.g. from left to right for robot to turn & check in a way that makes sense
+    # e.g. The connections need to be clockwise
     def check_next_nodes(self):
         obstacles = self.graph_reader.read_obstacles()
-        neighbors = self.get_neighbors()
-        print(f"[ET] I am now infront of my next node {self.current_node}. I will now check for the next {len(neighbors)} connections.")
+        unvisited_neighbors = self.get_univisted_nodes(self.get_neighbors())
+        print(f"[ET] I am now infront of my next node {self.current_node}. I will now check for the next {len(unvisited_neighbors)} connections.")
 
-        for neighbor in neighbors:
+        for neighbor in unvisited_neighbors:
             check_connections = {neighbor, self.current_node}
             if any(check_connections.issubset(set(sublist)) for sublist in obstacles["barrier"]):
                 print(f"There is a movable object between node {self.current_node} and {neighbor}.")
@@ -76,3 +77,6 @@ class Robot:
     def get_neighbors(self):
         neighboring_nodes = self.graph[self.current_node]
         return [list(n.keys())[0] for n in neighboring_nodes]
+
+    def get_univisted_nodes(self, nodes):
+        return [item for item in nodes if item not in self.previous_path]
