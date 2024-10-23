@@ -15,16 +15,14 @@ install:          ## Install the project in dev mode.
 
 .PHONY: fmt
 fmt:              ## Format code using black & isort.
-	poetry run isort simulator/
-	poetry run black -l 79 simulator/
-	poetry run black -l 79 tests/
+	poetry run isort .
+	poetry run black -l 120 .
 
 .PHONY: lint
 lint:             ## Run pep8, black, mypy linters.
-	poetry run flake8 simulator/
-	poetry run black -l 79 --check simulator/
-	poetry run black -l 79 --check tests/
-	poetry run mypy --ignore-missing-imports simulator/
+	poetry run flake8 --max-line-length 120 .
+	poetry run black -l 120 --check .
+	poetry run mypy --ignore-missing-imports .
 
 .PHONY: test
 test: lint        ## Run tests and generate coverage report.

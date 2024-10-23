@@ -53,9 +53,8 @@ make test
 
 5. Lint and format code:
 ```bash
-poetry run isort simulator/
-poetry run black -l 79 simulator/
-poetry run black -l 79 tests/
+poetry run isort .
+poetry run black -l 120 .
 # or
 make fmt
 ```
