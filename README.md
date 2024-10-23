@@ -27,7 +27,7 @@ If you wish to contribute or modify the project, follow these steps:
 
 1. Install `poetry`:
 ```bash
-curl -sSL https://install.python-poetry.org | python3 -
+pip install poetry
 ```
 
 2. Install the project in editable mode with development dependencies:
