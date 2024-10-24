@@ -5,10 +5,9 @@ from simulator.robot import Robot
 
 def run(robot):
     while not robot.has_reached_target():
-        robot.check_next_nodes()
-        robot.move_to_next_node()
+        neighbors = robot.check_next_nodes()
+        robot.move_to_next_node(neighbors)
     print(f"Reached the target {robot.target_node} via {robot.previous_path}")
-
 
 if __name__ == "__main__":
     graph_reader = GraphReaderYAML()
