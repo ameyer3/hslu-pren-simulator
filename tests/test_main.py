@@ -1,5 +1,5 @@
 from simulator.graph_reader_yaml import GraphReaderYAML
-from simulator.main import run
+from simulator.__main__ import run
 from simulator.path_calculator import PathCalculator
 from simulator.robot import Robot
 

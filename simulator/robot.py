@@ -64,6 +64,7 @@ class Robot:
             if any(check_connections.issubset(set(sublist)) for sublist in obstacles["missing_line"]):
                 print(f"There is a missing line between connection {self.current_node} and {neighbor}.")
                 self.remove_edge(neighbor)
+                neighbors.remove(neighbor)
             if neighbor in obstacles["cone"]:
                 print(f"Pylon on {neighbor}.")
                 self.remove_node(neighbor)
