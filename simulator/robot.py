@@ -20,10 +20,10 @@ class Robot:
     def has_reached_target(self):
         return self.current_node == self.target_node
 
-    def move_to_next_node(self):
+    def move_to_next_node(self, neighbors):
+        next_node, node_position = self.get_next_node_position(neighbors)
+        print(f"Moving from {self.current_node} to {next_node} which is the {node_position} edge from left to right.")
         self.previous_path.append(self.current_node)
-        next_node = self.get_next_node()
-        print(f"Moving from {self.current_node} to {next_node}")
         self.current_node = next_node
 
     def get_next_node(self):
@@ -32,16 +32,26 @@ class Robot:
         )
         print(f"The next node considering the shortest path is node {next_node}")
         return next_node
+    
+
+    def get_next_node_position(self, neighbors):
+        next_node = self.get_next_node()
+        target_index = neighbors.index(next_node)
+        if len(self.previous_path) != 0:
+            start_index = neighbors.index(self.previous_path[-1])
+            edges_to_target = (target_index - start_index) % len(neighbors)
+        else:
+            edges_to_target = target_index + 1
+
+        return next_node, edges_to_target
 
     def move_object(self, next_node):
         print(f"Object between {self.current_node} and {next_node} is being moved.")
 
-    # We need to make sure that our base graph has lettering that makes sense
-    # e.g. from left to right for robot to turn & check in a way that makes sense
-    # e.g. The connections need to be clockwise
     def check_next_nodes(self):
         obstacles = self.graph_reader.read_obstacles()
-        unvisited_neighbors = self.get_unvisited_nodes(self.get_neighbors())
+        neighbors = (self.get_neighbors())
+        unvisited_neighbors = self.get_unvisited_nodes(neighbors)
         print(
             f"[ET] I am now infront of my next node {self.current_node}. I will now check for the next {len(unvisited_neighbors)} connections."
         )
@@ -54,9 +64,11 @@ class Robot:
             if any(check_connections.issubset(set(sublist)) for sublist in obstacles["missing_line"]):
                 print(f"There is a missing line between connection {self.current_node} and {neighbor}.")
                 self.remove_edge(neighbor)
+                neighbors.remove(neighbor)
             if neighbor in obstacles["cone"]:
                 print(f"Pylon on {neighbor}.")
                 self.remove_node(neighbor)
+        return neighbors
 
     def increase_weight_for_edge_with_obstacle(self, node):
         if [node, self.current_node] not in self.reweighted_edges:
