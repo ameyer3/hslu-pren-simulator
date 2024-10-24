@@ -6,8 +6,11 @@ OBJECT_WEIGHT = 10
 
 class Robot:
     reweighted_edges = []
+    previous_path = []
 
-    def __init__(self, graph_reader: GraphReader, graph, start_node: str, target_node: str, path_calculator: PathCalculator):
+    def __init__(
+        self, graph_reader: GraphReader, graph, start_node: str, target_node: str, path_calculator: PathCalculator
+    ):
         self.graph_reader = graph_reader
         self.current_node = start_node
         self.target_node = target_node
@@ -18,12 +21,15 @@ class Robot:
         return self.current_node == self.target_node
 
     def move_to_next_node(self):
+        self.previous_path.append(self.current_node)
         next_node = self.get_next_node()
         print(f"Moving from {self.current_node} to {next_node}")
         self.current_node = next_node
 
     def get_next_node(self):
-        next_node = self.path_calculator.get_next_node(graph=self.graph, start=self.current_node, target=self.target_node)
+        next_node = self.path_calculator.get_next_node(
+            graph=self.graph, start=self.current_node, target=self.target_node
+        )
         print(f"The next node considering the shortest path is node {next_node}")
         return next_node
 
@@ -32,20 +38,16 @@ class Robot:
 
     # We need to make sure that our base graph has lettering that makes sense
     # e.g. from left to right for robot to turn & check in a way that makes sense
-    def check_next_nodes(
-        self,
-    ):
+    # e.g. The connections need to be clockwise
+    def check_next_nodes(self):
         obstacles = self.graph_reader.read_obstacles()
-        neighbors = self.get_neighbors()
+        unvisited_neighbors = self.get_unvisited_nodes(self.get_neighbors())
         print(
-            f"[ET] I am now infront of my next node {self.current_node}. I will now check for the next {len(neighbors)} connections."
+            f"[ET] I am now infront of my next node {self.current_node}. I will now check for the next {len(unvisited_neighbors)} connections."
         )
 
-        for neighbor in neighbors:
-            check_connections = {
-                neighbor,
-                self.current_node,
-            }
+        for neighbor in unvisited_neighbors:
+            check_connections = {neighbor, self.current_node}
             if any(check_connections.issubset(set(sublist)) for sublist in obstacles["barrier"]):
                 print(f"There is a movable object between node {self.current_node} and {neighbor}.")
                 self.increase_weight_for_edge_with_obstacle(neighbor)
@@ -58,14 +60,20 @@ class Robot:
 
     def increase_weight_for_edge_with_obstacle(self, node):
         if [node, self.current_node] not in self.reweighted_edges:
-            self.graph[self.current_node] = [{k: v + OBJECT_WEIGHT if k == node else v for k, v in neighbor.items()} for neighbor in self.graph[self.current_node]]
-            self.graph[node] = [{k: v + OBJECT_WEIGHT if k == self.current_node else v for k, v in neighbor.items()} for neighbor in self.graph[node]]
+            self.graph[self.current_node] = [
+                {k: v + OBJECT_WEIGHT if k == node else v for k, v in neighbor.items()}
+                for neighbor in self.graph[self.current_node]
+            ]
+            self.graph[node] = [
+                {k: v + OBJECT_WEIGHT if k == self.current_node else v for k, v in neighbor.items()}
+                for neighbor in self.graph[node]
+            ]
             print(f"Weight between {self.current_node} and {node} has been raised by {OBJECT_WEIGHT}.")
-            self.reweighted_edges += [self.current_node, node],[node,self.current_node]
+            self.reweighted_edges += [self.current_node, node], [node, self.current_node]
             print(self.reweighted_edges)
         else:
             print("Barrier has already been detected and taken into account.")
-    
+
     def remove_node(self, node_to_remove):
         del self.graph[node_to_remove]
         for (
@@ -88,3 +96,6 @@ class Robot:
     def get_neighbors(self):
         neighboring_nodes = self.graph[self.current_node]
         return [list(n.keys())[0] for n in neighboring_nodes]
+
+    def get_unvisited_nodes(self, nodes):
+        return [item for item in nodes if item not in self.previous_path]

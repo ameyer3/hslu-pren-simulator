@@ -1,6 +1,7 @@
 import heapq
 from typing import Dict
 
+
 class PathCalculator:
     path = []
     amount_of_no_change_in_graph = 0
@@ -16,10 +17,9 @@ class PathCalculator:
             distance, self.path = self._dijkstra(graph, start, target)
         print(f"Planned path is {self.path}")
         return self.path[self.amount_of_no_change_in_graph + 1]
-            
-            
+
     def _dijkstra(self, graph, start, target):
-        distances = {node: float('inf') for node in graph}
+        distances = {node: float("inf") for node in graph}
         distances[start] = 0
         previous_nodes = {node: None for node in graph}
 
