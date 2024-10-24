@@ -1,6 +1,6 @@
-from graph_reader_yaml import GraphReaderYAML
-from robot import Robot
-from path_calculator import PathCalculator
+from simulator.graph_reader_yaml import GraphReaderYAML
+from simulator.robot import Robot
+from simulator.path_calculator import PathCalculator
 
 def run(robot):
     while not robot.has_reached_target():
